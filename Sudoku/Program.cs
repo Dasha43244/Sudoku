@@ -31,14 +31,14 @@ class SudokuGame
                     Console.Write("Введите число (1-9): ");
                     if (int.TryParse(Console.ReadLine(), out int number) && number >= 1 && number <= 9)
                     {
-                        if (sudokuBoard[row - 1, col - 1] == 0)
+                        if (sudokuBoard[row - 1, col - 1] == 0 && !IsNumberInRow(row - 1, number) && !IsNumberInCol(col - 1, number))
                         {
                             sudokuBoard[row - 1, col - 1] = number;
                             PrintBoard();
                         }
                         else
                         {
-                            Console.WriteLine("Эта ячейка уже заполнена. Попробуйте снова.");
+                            Console.WriteLine("Невозможно разместить число в этой ячейке. Попробуйте снова.");
                         }
                     }
                     else
@@ -62,7 +62,7 @@ class SudokuGame
 
     static void PrintBoard()
     {
-        Console.WriteLine("Судоку:\n");
+        Console.WriteLine("Судоку:");
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -74,12 +74,10 @@ class SudokuGame
             Console.WriteLine();
             if (row == 2 || row == 5)
                 Console.WriteLine("---------|---------|---------");
-            
         }
         Console.WriteLine();
-        
     }
-    
+
     static bool IsSudokuSolved()
     {
         for (int row = 0; row < 9; row++)
@@ -91,10 +89,27 @@ class SudokuGame
                     return false;
                 }
             }
-        } 
+        }
         return true;
     }
-   
+
+    static bool IsNumberInRow(int row, int number)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            if (sudokuBoard[row, col] == number)
+                return true;
+        }
+        return false;
+    }
+
+    static bool IsNumberInCol(int col, int number)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            if (sudokuBoard[row, col] == number)
+                return true;
+        }
+        return false;
+    }
 }
-
-
