@@ -1,37 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 
 class SudokuGame
 {
-    static int[,] sudokuBoard = new int[,]
-    {
-        {5, 3, 0, 0, 7, 0, 0, 0, 0},
-        {6, 0, 0, 1, 9, 5, 0, 0, 0},
-        {0, 9, 8, 0, 0, 0, 0, 6, 0},
-        {8, 0, 0, 0, 6, 0, 0, 0, 3},
-        {4, 0, 0, 8, 0, 3, 0, 0, 1},
-        {7, 0, 0, 0, 2, 0, 0, 0, 6},
-        {0, 6, 0, 0, 0, 0, 2, 8, 0},
-        {0, 0, 0, 4, 1, 9, 0, 0, 5},
-        {0, 0, 0, 0, 8, 0, 0, 7, 9}
-    };
+    static int[,] sudokuBoard = new int[9, 9];
 
     static void Main()
     {
         Console.WriteLine("Добро пожаловать в игру Судоку!");
+        GenerateRandomSudoku();
         PrintBoard();
 
         while (!IsSudokuSolved())
         {
-            Console.Write("Введите строку (1-9) и столбец (1-9) через пробел, а затем введите число (1-9) для заполнения: ");
+            Console.Write("Введите строку (1-9) и столбец (1-9) через пробел, а затем введите число (1-9) для заполнения (или 0 для удаления): ");
             string input = Console.ReadLine();
             if (input.Length == 3 && int.TryParse(input[0].ToString(), out int row) && int.TryParse(input[2].ToString(), out int col))
             {
                 if (row >= 1 && row <= 9 && col >= 1 && col <= 9)
                 {
-                    Console.Write("Введите число (1-9): ");
-                    if (int.TryParse(Console.ReadLine(), out int number) && number >= 1 && number <= 9)
+                    Console.Write("Введите число (1-9 или 0 для удаления): ");
+                    if (int.TryParse(Console.ReadLine(), out int number) && number >= 0 && number <= 9)
                     {
-                        if (sudokuBoard[row - 1, col - 1] == 0 && !IsNumberInRow(row - 1, number) && !IsNumberInCol(col - 1, number))
+                        if (number == 0 || (!IsNumberInRow(row - 1, number) && !IsNumberInCol(col - 1, number)))
                         {
                             sudokuBoard[row - 1, col - 1] = number;
                             PrintBoard();
@@ -43,7 +34,7 @@ class SudokuGame
                     }
                     else
                     {
-                        Console.WriteLine("Пожалуйста, введите число от 1 до 9.");
+                        Console.WriteLine("Пожалуйста, введите число от 0 до 9.");
                     }
                 }
                 else
@@ -56,13 +47,34 @@ class SudokuGame
                 Console.WriteLine("Неверный формат ввода. Попробуйте снова.");
             }
         }
-
         Console.WriteLine("Поздравляем! Вы решили Судоку!");
+    }
+
+    static void GenerateRandomSudoku()
+    {
+        Random random = new Random();
+
+        // Заполняем доску судоку случайными числами
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (random.Next(1, 11) <= 3) // 30% вероятность заполнения
+                {
+                    int number;
+                    do
+                    {
+                        number = random.Next(1, 10);
+                    } while (IsNumberInRow(row, number) || IsNumberInCol(col, number));
+                    sudokuBoard[row, col] = number;
+                }
+            }
+        }
     }
 
     static void PrintBoard()
     {
-        Console.WriteLine("Судоку:");
+        Console.WriteLine("Судоку:\n");
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
