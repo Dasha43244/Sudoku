@@ -10,7 +10,7 @@ class SudokuGame
         Console.WriteLine("Добро пожаловать в игру Судоку!");
         GenerateRandomSudoku();
         PrintBoard();
-
+        
         while (!IsSudokuSolved())
         {
             Console.Write("Введите строку (1-9) и столбец (1-9) через пробел, а затем введите число (1-9) для заполнения (или 0 для удаления): ");
@@ -47,6 +47,7 @@ class SudokuGame
                 Console.WriteLine("Неверный формат ввода. Попробуйте снова.");
             }
         }
+        Console.ResetColor(); // Восстанавливаем стандартный цвет консоли
         Console.WriteLine("Поздравляем! Вы решили Судоку!");
     }
 
@@ -84,7 +85,7 @@ class SudokuGame
                     do
                     {
                         number = random.Next(1, 10);
-                    } while (IsNumberInRow(row, number) || IsNumberInCol(col, number));
+                    } while (IsNumberInRow(row, number) || IsNumberInCol(col, number ) || IsNumberInBlock(row,col,number));
                     sudokuBoard[row, col] = number;
                 }
             }
@@ -94,18 +95,38 @@ class SudokuGame
     static void PrintBoard()
     {
         Console.WriteLine("Судоку:\n");
+
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                Console.Write(sudokuBoard[row, col] == 0 ? " . " : $" {sudokuBoard[row, col]} ");
+                int number = sudokuBoard[row, col];
+
+                if (number == 0)
+                {
+                    Console.Write(" . ");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow; // Устанавливаем цвет случайных цифр на желтый
+                    Console.Write($" {number} ");
+                    Console.ResetColor(); // Восстанавливаем стандартный цвет консоли
+                }
+
                 if (col == 2 || col == 5)
+                {
                     Console.Write("|");
+                }
             }
+
             Console.WriteLine();
+
             if (row == 2 || row == 5)
+            {
                 Console.WriteLine("---------|---------|---------");
+            }
         }
+
         Console.WriteLine();
     }
 
