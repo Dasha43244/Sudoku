@@ -22,7 +22,7 @@ class SudokuGame
                     Console.Write("Введите число (1-9 или 0 для удаления): ");
                     if (int.TryParse(Console.ReadLine(), out int number) && number >= 0 && number <= 9)
                     {
-                        if (number == 0 || (!IsNumberInRow(row - 1, number) && !IsNumberInCol(col - 1, number)))
+                        if (number == 0 || (!IsNumberInRow(row - 1, number) && !IsNumberInCol(col - 1, number) && !IsNumberInBlock(row - 1, col - 1, number)))
                         {
                             sudokuBoard[row - 1, col - 1] = number;
                             PrintBoard();
@@ -50,6 +50,25 @@ class SudokuGame
         Console.WriteLine("Поздравляем! Вы решили Судоку!");
     }
 
+    // Функция для проверки, содержит ли блок 3x3 заданное число
+    static bool IsNumberInBlock(int row, int col, int number)
+    {
+        int blockStartRow = row - row % 3;
+        int blockStartCol = col - col % 3;
+
+        for (int i = blockStartRow; i < blockStartRow + 3; i++)
+        {
+            for (int j = blockStartCol; j < blockStartCol + 3; j++)
+            {
+                if (sudokuBoard[i, j] == number)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     static void GenerateRandomSudoku()
     {
         Random random = new Random();
