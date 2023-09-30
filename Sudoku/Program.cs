@@ -2,18 +2,23 @@ using System;
 
 class SudokuGame
 {
+    // 9x9 массив для представления доски Судоку
     private static int[,] sudokuBoard = new int[9, 9];
 
     static void Main()
     {
         Console.WriteLine("Добро пожаловать в игру Судоку!");
+        // Генерируем случайную доску Судоку и выводим её
         GenerateRandomSudoku();
         PrintBoard();
 
+        // Главный цикл игры до решения Судоку
         while (!IsSudokuSolved())
         {
+            // Ввод пользователя для строки, столбца и числа
             Console.Write("Введите строку (1-9) и столбец (1-9) через пробел, а затем введите число (1-9) для заполнения (или 0 для удаления): ");
             string input = Console.ReadLine();
+            // Проверка и обработка ввода пользователя
             if (input.Length == 3 && int.TryParse(input[0].ToString(), out int row) && int.TryParse(input[2].ToString(), out int col))
             {
                 if (row >= 1 && row <= 9 && col >= 1 && col <= 9)
@@ -21,6 +26,7 @@ class SudokuGame
                     Console.Write("Введите число (1-9 или 0 для удаления): ");
                     if (int.TryParse(Console.ReadLine(), out int number) && number >= 0 && number <= 9)
                     {
+                        // Проверка, можно ли разместить число в выбранной ячейке
                         if (number == 0 || (!IsNumberInRow(row - 1, number) && !IsNumberInCol(col - 1, number) && !IsNumberInBlock(row - 1, col - 1, number)))
                         {
                             sudokuBoard[row - 1, col - 1] = number;
@@ -53,7 +59,7 @@ class SudokuGame
     {
         int blockStartRow = (row / 3) * 3;
         int blockStartCol = (col / 3) * 3;
-
+        // Проверяет, есть ли число уже в 3x3 блоке (подсетке) Судоку
         for (int i = blockStartRow; i < blockStartRow + 3; i++)
         {
             for (int j = blockStartCol; j < blockStartCol + 3; j++)
@@ -73,6 +79,7 @@ class SudokuGame
         {
             for (int col = 0; col < 9; col++)
             {
+                // Попытка размещения чисел от 1 до 9
                 if (board[row, col] == 0)
                 {
                     for (int num = 1; num <= 9; num++)
@@ -101,7 +108,52 @@ class SudokuGame
         // Проверяем, что число num не встречается в строке, столбце и блоке 3x3
         return !UsedInRow(board, row, num) && !UsedInCol(board, col, num) && !UsedInBox(board, row - row % 3, col - col % 3, num);
     }
+static void PrintBoard()
+    {
+        Console.WriteLine("Судоку:\n");
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                Console.Write(sudokuBoard[row, col] == 0 ? " . " : $" {sudokuBoard[row, col]} ");
+                if (col == 2 || col == 5)
+                    Console.Write("|");
+            }
+            Console.WriteLine();
+            if (row == 2 || row == 5)
+                Console.WriteLine("---------|---------|---------");
+        }
+        Console.WriteLine();
+    }
 
+    static void GenerateRandomSudoku()
+    {
+        // Создаем пустую доску
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                sudokuBoard[row, col] = 0;
+            }
+        }
+
+        // Решаем судоку (получаем полностью решенную доску)
+        SolveSudoku(sudokuBoard);
+
+        // Удаляем некоторые числа, чтобы создать начальную доску
+        Random random = new Random();
+        for (int i = 0; i < 45; i++) // Можете изменить количество чисел для удаления
+        {
+            int row, col;
+            do
+            {
+                row = random.Next(0, 9);
+                col = random.Next(0, 9);
+            } while (sudokuBoard[row, col] == 0);
+
+            sudokuBoard[row, col] = 0;
+        }
+    }
     static bool UsedInRow(int[,] board, int row, int num)
     {
         for (int col = 0; col < 9; col++)
@@ -140,52 +192,7 @@ class SudokuGame
         }
         return false;
     }
-    static void GenerateRandomSudoku()
-    {
-        // Создаем пустую доску
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                sudokuBoard[row, col] = 0;
-            }
-        }
-
-        // Решаем судоку (получаем полностью решенную доску)
-        SolveSudoku(sudokuBoard);
-
-        // Удаляем некоторые числа, чтобы создать начальную доску
-        Random random = new Random();
-        for (int i = 0; i < 40; i++) // Можете изменить количество чисел для удаления
-        {
-            int row, col;
-            do
-            {
-                row = random.Next(0, 9);
-                col = random.Next(0, 9);
-            } while (sudokuBoard[row, col] == 0);
-
-            sudokuBoard[row, col] = 0;
-        }
-    }
-
-    static void PrintBoard()
-    {
-        Console.WriteLine("Судоку:\n");
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                Console.Write(sudokuBoard[row, col] == 0 ? " . " : $" {sudokuBoard[row, col]} ");
-                if (col == 2 || col == 5)
-                    Console.Write("|");
-            }
-            Console.WriteLine();
-            if (row == 2 || row == 5)
-                Console.WriteLine("---------|---------|---------");
-        }
-        Console.WriteLine();
-    }
+    
     static bool IsValidBoard()
     {
         for (int i = 1; i <= 9; i++)
